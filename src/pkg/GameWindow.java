@@ -10,21 +10,15 @@ public class GameWindow extends JFrame {
 
     public GameWindow() {
         super("Game Window");
-        setSize(750, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Initialize the container panel and set its layout
         container = new JPanel();
         cardLayout = new CardLayout();
         container.setLayout(cardLayout);
 
-        // Initialize the game panels
         MemoryGame memoryGame = new MemoryGame();
-
-        // Add the game panels to the container
         container.add(memoryGame, "MemoryGame");
 
-        // Create the game selection button
         JButton memoryGameButton = new JButton("Memory Game");
         memoryGameButton.addActionListener(new ActionListener() {
             @Override
@@ -34,15 +28,19 @@ public class GameWindow extends JFrame {
             }
         });
 
-        // Create a panel to hold the game selection buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(memoryGameButton);
+        JLabel titleLabel = new JLabel("Citius");
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
 
-        // Add the container and button panels to the window
+        add(titleLabel, BorderLayout.NORTH);
         add(container, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Center the window and make it visible
+        pack();
+        setSize(500, 500);
+        setResizable(false);
         setLocationRelativeTo(null);
         setVisible(true);
     }

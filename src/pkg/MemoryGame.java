@@ -7,14 +7,18 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javax.swing.border.EmptyBorder;
 public class MemoryGame extends JPanel {
     private JButton[][] gridButtons;
     private Color[][] gridColors;
     private Random random = new Random();
     private List<Point> correctSequence = new ArrayList<>();  // Store the correct sequence of colors
     private List<Point> userSequence = new ArrayList<>();  // Store the user's sequence of colors
+    private int score = 0;
+    private JLabel scoreLabel;
     private JLabel messageLabel;  // Add this JLabel to display messages to the user
-
+    private static final int GRID_SIZE = 300;
+    private static final int BUTTON_SIZE = GRID_SIZE / 3;
 
     public void startGame() {
         GameTimer gameTimer = new GameTimer(60, new GameTimer.GameTimerListener() {
@@ -30,11 +34,22 @@ public class MemoryGame extends JPanel {
     }
 
     public MemoryGame() {
-        setLayout(new GridLayout(3, 3));
-        generateGridColors();
-        initializeButtons();
-        messageLabel = new JLabel();
+        setPreferredSize(new Dimension(300, 300));
+        setLayout(new BorderLayout());
+        messageLabel = new JLabel("", SwingConstants.CENTER);
         add(messageLabel, BorderLayout.NORTH);
+
+        JPanel gridPanel = new JPanel(new GridLayout(3, 3));
+        gridPanel.setPreferredSize(new Dimension(300, 300));
+        generateGridColors();
+        initializeButtons(gridPanel);
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.add(gridPanel);
+        centerPanel.setBorder(new EmptyBorder(50, 50, 50, 50)); // Add a margin of 50px
+        add(centerPanel, BorderLayout.CENTER);
+        scoreLabel = new JLabel("Score: " + score, SwingConstants.CENTER);
+        add(scoreLabel, BorderLayout.SOUTH);
     }
 
     private void generateGridColors() {
@@ -60,7 +75,7 @@ public class MemoryGame extends JPanel {
         delayTimer.start();
     }
 
-    private void initializeButtons() {
+    private void initializeButtons(JPanel gridPanel) {
         gridButtons = new JButton[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -90,7 +105,7 @@ public class MemoryGame extends JPanel {
                     }
                 });
                 gridButtons[i][j] = button;
-                add(button);
+                gridPanel.add(button);
             }
 
         }
@@ -98,6 +113,7 @@ public class MemoryGame extends JPanel {
     // Modify showColors to flash the color then reset it
     private int currentSequenceLength = 0;
     public void showColors() {
+        disableButtons();
         // Clear userSequence right before displaying a new sequence
         userSequence.clear();
         messageLabel.setText("");
@@ -134,11 +150,7 @@ public class MemoryGame extends JPanel {
                     index++;
                 } else {
                     timer.stop();
-                    for (JButton[] buttonRow : gridButtons) {
-                        for (JButton button : buttonRow) {
-                            button.setEnabled(true);
-                        }
-                    }
+                    enableButtons();
                 }
             }
         });
@@ -155,9 +167,12 @@ public class MemoryGame extends JPanel {
         }
 
         if (isCorrect && userSequence.size() == correctSequence.size()) {
+            score++; // Increment the score
+            scoreLabel.setText("Score: " + score); // Update the score label
             messageLabel.setText("Correct!");
             resetGridColors();
-            Timer delayTimer = new Timer(1000, new ActionListener() {
+            disableButtons();
+            Timer delayTimer = new Timer(500, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     showColors();
@@ -169,9 +184,10 @@ public class MemoryGame extends JPanel {
             messageLabel.setText("Incorrect Sequence");
             userSequence.clear();
             resetGridColors();
+            disableButtons();
 
             // After incorrect input, delay the sequence display for a moment
-            Timer delayTimer = new Timer(1000, new ActionListener() {
+            Timer delayTimer = new Timer(500, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     showCurrentColors();
@@ -188,12 +204,7 @@ public class MemoryGame extends JPanel {
 
     private void resetGame() {
         // Reset the game
-        for (JButton[] buttonRow : gridButtons) {
-            for (JButton button : buttonRow) {
-                button.setEnabled(false);  // Disable the buttons
-                button.setBackground(Color.GRAY);  // Reset the button color
-            }
-        }
+        disableButtons();
         userSequence.clear();  // Clear the user's sequence
 
         // Show the sequence again after a 1 second delay
@@ -208,12 +219,8 @@ public class MemoryGame extends JPanel {
         // Clear userSequence right before displaying the current sequence
         userSequence.clear();
         messageLabel.setText("");
-        // Disable all buttons at the start
-        for (JButton[] buttonRow : gridButtons) {
-            for (JButton button : buttonRow) {
-                button.setEnabled(false);
-            }
-        }
+        resetGridColors();
+        disableButtons();
         Timer timer = new Timer(500, null);
         timer.addActionListener(new ActionListener() {
             int index = 0;
@@ -227,7 +234,7 @@ public class MemoryGame extends JPanel {
                     button.setBackground(gridColors[point.x][point.y]);
 
                     // Flash color for a brief moment before resetting it
-                    Timer flashTimer = new Timer(500, new ActionListener() {
+                    Timer flashTimer = new Timer(250, new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             button.setBackground(originalColor);
@@ -239,15 +246,29 @@ public class MemoryGame extends JPanel {
                     index++;
                 } else {
                     timer.stop();
-                    for (JButton[] buttonRow : gridButtons) {
-                        for (JButton button : buttonRow) {
-                            button.setEnabled(true);
-                        }
-                    }
+                    enableButtons();
                 }
             }
         });
         timer.start();
+    }
+    private void disableButtons(){
+        // Disable all buttons at the start
+        for (JButton[] buttonRow : gridButtons) {
+            for (JButton button : buttonRow) {
+                button.setEnabled(false);
+                button.setBackground(Color.GRAY);
+            }
+        }
+    }
+    private void enableButtons(){
+        // enable buttons
+        for (JButton[] buttonRow : gridButtons) {
+            for (JButton button : buttonRow) {
+                button.setEnabled(true);
+                button.setBackground(Color.GRAY);
+            }
+        }
     }
 
     private void endGame() {
