@@ -8,15 +8,23 @@ These instructions will get you a copy of the project up and running on your loc
 You will need the following tools:
 
 - Java Development Kit (JDK) 8 or newer
-- Any Integrated Development Environment (IDE) that supports Java
+- Any Integrated Development Environment (IDE) that supports Java (Optional if you plan on running the program from an IDE)
 
 ## Installing
-- Clone the repository
+
+There are 2 simple ways to play the game:
+
+#### Clone the repository
+
 git clone https://github.com/username/CitiusApp.git
+
 Open the project with your IDE
+
 Run the Main.java file to start the game
-- Download the repository
-- Run the PlayGame.jar file inside the citius folder
+
+#### Download the repository
+
+Run the PlayGame.jar file inside the citius folder
 
 ## How to Play
 When you start the game, a sequence of colors will flash on the grid.
@@ -26,8 +34,8 @@ If you reproduce the sequence incorrectly, the game will show the correct sequen
 The game ends when the timer runs out. Your score will be displayed at the end.
 
 ## Built With
-(Java)[https://www.java.com/en/] - The programming language used
-(Swing)[https://docs.oracle.com/javase/tutorial/uiswing/] - The Java library used for creating the GUI
+- [Java](https://www.java.com/en/) - The programming language used
+- [Swing](https://docs.oracle.com/javase/tutorial/uiswing/) - The Java library used for creating the GUI
 
 ## Authors
 Minsu Kim
