@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.swing.border.EmptyBorder;
+
 public class MemoryGame extends JPanel {
     private JButton[][] gridButtons;
     private Color[][] gridColors;
@@ -17,6 +18,8 @@ public class MemoryGame extends JPanel {
     private int score = 0;
     private JLabel scoreLabel;
     private JLabel messageLabel;  // Add this JLabel to display messages to the user
+    private JLabel timerLabel;
+    private JButton startButton;
     private static final int GRID_SIZE = 300;
     private static final int BUTTON_SIZE = GRID_SIZE / 3;
 
@@ -27,17 +30,37 @@ public class MemoryGame extends JPanel {
                 // This is called when the timer runs out.
                 // You can add code here to end the game and show the score.
                 // Make sure to access Swing components on the Event Dispatch Thread using SwingUtilities.invokeLater().
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        messageLabel.setText("Game Over! Your score is: " + score);
+                        startButton.setText("Try Again"); // Change the button text to "Try Again"
+                        startButton.setVisible(true); // Make the button visible again
+                    }
+                });
             }
         });
         gameTimer.startTimer();
+        // Add ActionListener to update timerLabel every second
+        gameTimer.getSwingTimer().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        timerLabel.setText("Time left: " + gameTimer.getTimeLeft());
+                    }
+                });
+            }
+        });
         // You can also add code here to reset the game state if necessary.
     }
 
-    public MemoryGame() {
+    public MemoryGame(JButton startButton) {
         setPreferredSize(new Dimension(300, 300));
         setLayout(new BorderLayout());
-        messageLabel = new JLabel("", SwingConstants.CENTER);
-        add(messageLabel, BorderLayout.NORTH);
+
+        this.startButton = startButton;
 
         JPanel gridPanel = new JPanel(new GridLayout(3, 3));
         gridPanel.setPreferredSize(new Dimension(300, 300));
@@ -46,10 +69,16 @@ public class MemoryGame extends JPanel {
 
         JPanel centerPanel = new JPanel();
         centerPanel.add(gridPanel);
+        messageLabel = new JLabel("", SwingConstants.CENTER);
+        add(messageLabel, BorderLayout.NORTH);
+        timerLabel = new JLabel("", SwingConstants.CENTER);
+        add(timerLabel, BorderLayout.NORTH);
         centerPanel.setBorder(new EmptyBorder(50, 50, 50, 50)); // Add a margin of 50px
         add(centerPanel, BorderLayout.CENTER);
         scoreLabel = new JLabel("Score: " + score, SwingConstants.CENTER);
         add(scoreLabel, BorderLayout.SOUTH);
+
+
     }
 
     private void generateGridColors() {
@@ -169,7 +198,12 @@ public class MemoryGame extends JPanel {
         if (isCorrect && userSequence.size() == correctSequence.size()) {
             score++; // Increment the score
             scoreLabel.setText("Score: " + score); // Update the score label
-            messageLabel.setText("Correct!");
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    messageLabel.setText("Correct!");
+                }
+            });
             resetGridColors();
             disableButtons();
             Timer delayTimer = new Timer(500, new ActionListener() {
@@ -181,7 +215,12 @@ public class MemoryGame extends JPanel {
             delayTimer.setRepeats(false);
             delayTimer.start();
         } else if (!isCorrect) {
-            messageLabel.setText("Incorrect Sequence");
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    messageLabel.setText("Incorrect Sequence");
+                }
+            });
             userSequence.clear();
             resetGridColors();
             disableButtons();
@@ -197,6 +236,7 @@ public class MemoryGame extends JPanel {
             delayTimer.start();
         }
     }
+
 
 
 
@@ -273,6 +313,9 @@ public class MemoryGame extends JPanel {
 
     private void endGame() {
         // The game ends here. You can add code to handle this, such as showing the user's score and restarting the game.
+        messageLabel.setText("Game Over! Your score is: " + score);
+        resetGame();
+        disableButtons();
     }
 
 

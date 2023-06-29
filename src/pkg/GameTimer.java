@@ -13,7 +13,12 @@ public class GameTimer {
         this.timeLeft = timeLeft;
         this.listener = listener;
     }
-
+    public int getTimeLeft() {
+        return timeLeft;
+    }
+    public javax.swing.Timer getSwingTimer() {
+        return swingTimer;
+    }
     public void startTimer() {
         swingTimer = new javax.swing.Timer(1000, new ActionListener() {
             @Override

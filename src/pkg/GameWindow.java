@@ -9,22 +9,24 @@ public class GameWindow extends JFrame {
     private CardLayout cardLayout;
 
     public GameWindow() {
-        super("Game Window");
+        super("Citus App");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         container = new JPanel();
         cardLayout = new CardLayout();
         container.setLayout(cardLayout);
-
-        MemoryGame memoryGame = new MemoryGame();
+        JButton memoryGameButton = new JButton("Start Game");
+        MemoryGame memoryGame = new MemoryGame(memoryGameButton);
         container.add(memoryGame, "MemoryGame");
 
-        JButton memoryGameButton = new JButton("Memory Game");
+
         memoryGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(container, "MemoryGame");
                 memoryGame.showColors();
+                memoryGame.startGame();
+                memoryGameButton.setVisible(false);
             }
         });
 
