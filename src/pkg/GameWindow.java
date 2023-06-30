@@ -23,10 +23,16 @@ public class GameWindow extends JFrame {
         memoryGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(container, "MemoryGame");
-                memoryGame.showColors();
-                memoryGame.startGame();
-                memoryGameButton.setVisible(false);
+                if (memoryGameButton.getText().equals("Try Again")) {
+                    // Reset the game
+                    memoryGame.resetGame();
+                } else {
+                    // Start a new game
+                    cardLayout.show(container, "MemoryGame");
+                    memoryGame.showColors();
+                    memoryGame.startGame();
+                    memoryGameButton.setVisible(false);
+                }
             }
         });
 
